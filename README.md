@@ -1,4 +1,5 @@
-# Morse MQTT PRoject
+# Morse MQTT PRoject 
+## Groupe H
 
 ## This project combines two main functions:
 
