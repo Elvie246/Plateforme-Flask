@@ -1,41 +1,36 @@
-# Variables
+# Nom de l'exécutable final
 TARGET = morse_mqtt
-RM = rm --interactive=once -vf
+
+# Compilateur
 CC = gcc
-CFLAGS = -Wall -Wextra -std=c11
 
-# Phony targets
-.PHONY: default build clean distclean run
+# Options de compilation
+CFLAGS = -Wall -Wextra -std=c11 -DFAKE_LED=1
 
-# Default target
-default: build
+# Bibliothèques nécessaires
+LIBS = -lmosquitto
 
-# Build target
-build: $(TARGET)
+# Liste des fichiers sources
+SRCS = main.c mqtt.c morse.c led.c
 
-# Linking step
-$(TARGET): main.o mqtt.o morse.o led.o
-	$(CC) $^ -o $@
+# Liste des fichiers objets générés
+OBJS = $(SRCS:.c=.o)
 
-# Dependencies for source files
-main.o: mqtt.h morse.h led.h
-mqtt.o: mqtt.h
-morse.o: morse.h
-led.o: led.h
+# Règle par défaut
+all: $(TARGET)
 
-# Pattern rule for object files
+# Compilation de l'exécutable
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) $(OBJS) -o $(TARGET) $(LIBS)
+
+# Règles pour compiler les fichiers objets
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Clean up object files
+# Nettoyage des fichiers objets et de l'exécutable
 clean:
-	$(RM) *.o
+	rm -vf $(OBJS) $(TARGET)
 
-# Clean up everything
-distclean: clean
-	$(RM) $(TARGET)
-
-# Run the program
+# Exécution du programme
 run: $(TARGET)
 	./$(TARGET)
-          
