@@ -16,3 +16,8 @@ git clone https://github.com/Elvie246/plateforme-Flask.git
 ````bash
 pip install -r requirements.txt
 ````
+
+## 3. Créer un répertoire pour le projet :
+````bash
+mkdir nom_du_fichier
+````
