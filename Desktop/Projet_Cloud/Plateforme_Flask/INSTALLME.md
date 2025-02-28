@@ -15,4 +15,4 @@ git clone https://github.com/Elvie246/plateforme-Flask.git
 ## 2. Installer les dépendances
 ````bash
 pip install -r requirements.txt
-``
+````
