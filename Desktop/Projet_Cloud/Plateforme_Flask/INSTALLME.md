@@ -21,3 +21,8 @@ pip install -r requirements.txt
 ````bash
 mkdir nom_du_fichier
 ````
+
+## 4. Pour changer de brache :
+````bash
+git checkout nom de la branche
+````
