@@ -3,7 +3,7 @@ import os
 from datetime import datetime
 
 # Initialisation de l'application Flask
-app = Flask(__My Tasks__)
+app = Flask(__name__)
 
 # Liste de tâches en mémoire (simulée)
 tasks = []
