@@ -32,3 +32,12 @@ git checkout nom de la branche
 ````bash
 git branch
 ````
+# Pour travailler sur la branche feature 
+## 1. Pour commencer un feature 
+````bash
+git flow feature start nom_de_la_tâche
+````
+## 2. Pour terminer  un feature 
+````bash
+git flow feature finish nom_de_la_tâche
+````
