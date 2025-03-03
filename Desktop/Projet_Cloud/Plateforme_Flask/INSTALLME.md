@@ -26,3 +26,9 @@ mkdir nom_du_fichier
 ````bash
 git checkout nom de la branche
 ````
+
+# Bonnes pratiques 
+## 1. Toujours verifier que l'on se situe sur la bonne brache avant de poussez le projet et/ou faire un commit
+````bash
+git branch
+````
