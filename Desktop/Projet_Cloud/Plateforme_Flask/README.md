@@ -16,9 +16,6 @@ This project involves developing a Flask-based platform that dynamically distrib
 #### Monitoring and logging: Use of Azure Monitor and Kubernetes Logging.
 #### Security: Secret management and secure authentication with Azure Managed Identities.
 
-
-## Contribution
-
 ## Versionning
 
 ## License
