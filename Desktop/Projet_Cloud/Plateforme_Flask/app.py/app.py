@@ -1,12 +1,48 @@
 from flask import Flask, jsonify, request, abort
+from from azure.storage.blob import BlobServiceClient
+import json
 import os
 from datetime import datetime
 
 # Initialisation de l'application Flask
 app = Flask(__name__)
 
-# Liste de tâches en mémoire (simulée)
-tasks = []
+
+# Configuration Azure Blob Storage
+CONNECTION_STRING = os.getenv("AZURE_STORAGE_CONNECTION_STRING", "votre_chaîne_de_connexion")
+CONTAINER_NAME = os.getenv("AZURE_CONTAINER_NAME", "votre_conteneur")
+BLOB_NAME = "tasks.json"
+
+# Initialiser le client Azure Blob Storage
+blob_service_client = BlobServiceClient.from_connection_string(CONNECTION_STRING)
+container_client = blob_service_client.get_container_client(CONTAINER_NAME)
+
+# Fonction pour charger les tâches depuis Azure Blob Storage
+def load_tasks():
+    """
+    Charge les tâches depuis le fichier JSON stocké dans Azure Blob Storage.
+    """
+    try:
+        blob_client = container_client.get_blob_client(BLOB_NAME)
+        blob_data = blob_client.download_blob().readall()
+        return json.loads(blob_data)
+    except Exception as e:
+        print(f"Erreur lors du chargement des tâches : {e}")
+        return []
+
+
+# Fonction pour sauvegarder les tâches dans Azure Blob Storage
+def save_tasks(tasks):
+    """
+    Sauvegarde les tâches dans le fichier JSON sur Azure Blob Storage.
+    """
+    try:
+        blob_client = container_client.get_blob_client(BLOB_NAME)
+        blob_client.upload_blob(json.dumps(tasks), overwrite=True)
+    except Exception as e:
+        print(f"Erreur lors de la sauvegarde des tâches : {e}")
+
+
 
 # Structure d'une tâche
 def create_task(task_id, description, priority="Medium", due_date=None):
@@ -23,15 +59,16 @@ def create_task(task_id, description, priority="Medium", due_date=None):
 @app.route('/api/tasks', methods=['GET'])
 def get_tasks():
     """
-    Récupère la liste complète des tâches.
+    Récupère la liste depuis azure.
     """
+    tasks = load_tasks()
     return jsonify(tasks)
 
 # Endpoint pour ajouter une tâche
 @app.route('/api/tasks', methods=['POST'])
 def add_task():
     """
-    Ajoute une nouvelle tâche à la liste.
+    Ajoute une nouvelle tâche et sauvegarde sur azure
     """
     if not request.json or not 'description' in request.json:
         abort(400, description="La description de la tâche est requise.")
@@ -54,11 +91,13 @@ def complete_task(task_id):
     """
     Marque une tâche comme terminée.
     """
+    tasks = load_tasks()
     task = next((task for task in tasks if task['id'] == task_id), None)
     if not task:
         abort(404, description="Tâche non trouvée.")
 
     task['completed'] = True
+    save_tasks(tasks)
     return jsonify(task)
 
 # Endpoint pour supprimer une tâche
@@ -67,12 +106,13 @@ def delete_task(task_id):
     """
     Supprime une tâche de la liste.
     """
-    global tasks
+    tasks = load_tasks()
     task = next((task for task in tasks if task['id'] == task_id), None)
     if not task:
         abort(404, description="Tâche non trouvée.")
 
     tasks = [task for task in tasks if task['id'] != task_id]
+    save_tasks(tasks)
     return jsonify({"message": "Tâche supprimée avec succès."})
 
 # Endpoint pour la page d'accueil
